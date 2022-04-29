@@ -14,4 +14,9 @@ RUN chown -R usr:wheel $HOME
 
 COPY --chown=usr:wheel ./hello.py $HOME/
 
+RUN chgrp -R 0 $HOME && \
+    chmod -R g=u $HOME
+
+USER 1001
+
 ENTRYPOINT ["python3", "./hello.py"]
