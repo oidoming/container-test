@@ -2,21 +2,25 @@ FROM quay.io/centos/centos:stream8
 
 RUN dnf update -y && \
     dnf install -y \ 
+    gcc \
+    krb5-devel \
     python3-devel
 
 ENV HOME /home/usr
 RUN useradd -r -d $HOME usr
 RUN usermod -aG wheel usr
 
-WORKDIR $HOME
+RUN mkdir app
 
-RUN chown -R usr:wheel $HOME
+WORKDIR $HOME/app
 
-COPY --chown=usr:wheel ./hello.py $HOME/
+RUN chown -R usr:wheel $HOME/app
 
-RUN chgrp -R 0 $HOME && \
-    chmod -R g=u $HOME
+COPY --chown=usr:wheel ./hello.py $HOME/app
+COPY --chown=usr:wheel ./requirements.txt $HOME/app
 
-USER 1001
+RUN pip3 install -r requirements.txt
 
 ENTRYPOINT ["python3", "./hello.py"]
+
+USER usr
